@@ -1,0 +1,65 @@
+﻿@model UserViewModel
+@{
+    ViewData["Title"] = "AddUser";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<div class="row">
+
+    <div class="col-md-4 offset-md-4">
+        <h4>New User</h4>
+        <hr />
+        <h5>@ViewBag.error</h5>
+        <form asp-action="InsertUser" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Employee_ID" class="control-label"></label>
+                <input asp-for="Employee_ID" class="form-control" />
+                <span asp-validation-for="Employee_ID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SAP_ID" class="control-label"></label>
+                <input asp-for="SAP_ID" class="form-control" />
+                <span asp-validation-for="SAP_ID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Employee_Name" class="control-label"></label>
+                <input asp-for="Employee_Name" class="form-control" />
+                <span asp-validation-for="Employee_Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Employee_Surname" class="control-label"></label>
+                <input asp-for="Employee_Surname" class="form-control" />
+                <span asp-validation-for="Employee_Surname" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Entry_Date" class="control-label"></label>
+                <input asp-for="Entry_Date" class="form-control" type="date"/>
+                <span asp-validation-for="Entry_Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" type="email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label"></label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            @*<div class="form-group">
+            <label asp-for="User_Role" class="control-label"></label>
+            @Html.DropDownList("User_Role", (IEnumerable<SelectListItem>)ViewBag.User_Role, "Select", htmlAttributes: new { @class = "form-control" })
+            <span asp-validation-for="User_Role" class="text-danger"></span>
+        </div>*@
+            <div class="form-group">
+                <input type="submit" value="Enter" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

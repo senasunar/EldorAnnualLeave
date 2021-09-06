@@ -1,0 +1,35 @@
+﻿@model EnterLeaveViewModel
+@{
+    ViewData["Title"] = "EnterLeave";
+    Layout = "~/Views/Manager/_ManagerLayout.cshtml";
+}
+
+<div class="row">
+
+    <div class="col-md-4 offset-md-4">
+        <h4>Enter Leave Form</h4>
+        <hr />
+        <h5>@ViewBag.error</h5>
+        <form asp-action="InsertLeave" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Start_Day" class="control-label"></label>
+                <input asp-for="Start_Day" class="form-control" type="date"/>
+                <span asp-validation-for="Start_Day" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="End_Day" class="control-label"></label>
+                <input asp-for="End_Day" class="form-control" type="date"/>
+                <span asp-validation-for="End_Day" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="annualLeaveTypeList" class="control-label"></label>
+                @Html.DropDownList("annualLeaveTypeList", (IEnumerable<SelectListItem>)ViewBag.annualLeaveTypeList, "Select", htmlAttributes: new { @class = "form-control" })
+                <span asp-validation-for="annualLeaveTypeList" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Enter" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

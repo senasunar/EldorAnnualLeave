@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UdemyNLayerProject.Core\EldorAnnualLeave.Core.csproj" />
+    <ProjectReference Include="..\UdemyNLayerProject.Data\EldorAnnualLeave.Data.csproj" />
+  </ItemGroup>
+
+</Project>
