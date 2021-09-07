@@ -265,7 +265,7 @@ namespace EldorAnnualLeave.Web.Controllers
             return RedirectToAction("EmployeeTable");
         }
 
-        public async Task<IActionResult> AddUserAsync()
+        public async Task<IActionResult> AddUser()
         {
             var roles = await _appRoleService.GetAllRolesAsync();
 
@@ -281,6 +281,8 @@ namespace EldorAnnualLeave.Web.Controllers
             }
 
             ViewBag.User_Role = User_Role;
+            if (TempData["error"] != null) ViewBag.error = TempData["error"].ToString();
+            
             return View();
         }
 
@@ -309,6 +311,23 @@ namespace EldorAnnualLeave.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> InsertUser(UserViewModel user)
         {
+            var usersList = await _appUserService.GetAllUsersAsync();
+
+            foreach(var item in usersList)
+            {
+                if(String.Compare(item.Email, user.Email) == 0)
+                {
+                    TempData["error"] = "This email address is already taken!";
+                    return RedirectToAction("AddUser");
+                }
+
+                if(String.Compare(item.UserName, user.UserName) == 0)
+                {
+                    TempData["error"] = "This username is already taken!";
+                    return RedirectToAction("AddUser");
+                }
+            }
+            
             AppUser appUser = new AppUser();
 
             //appUser.ID = "3";
