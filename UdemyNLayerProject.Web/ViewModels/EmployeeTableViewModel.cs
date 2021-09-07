@@ -8,7 +8,7 @@ namespace EldorAnnualLeave.Web.ViewModels
 {
     public class EmployeeTableViewModel
     {
-        public int Employee_ID { get; set; }
+        public string Employee_ID { get; set; }
         public int Annual_Leave { get; set; }
         public string Employee_Name { get; set; }
         public string Employee_Surname { get; set; }

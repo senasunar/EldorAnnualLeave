@@ -56,7 +56,7 @@ namespace EldorAnnualLeave.Web
             {
                 options.UseSqlServer(Configuration["ConnectionStrings:SqlConStr"].ToString(), o =>
                 {
-                    o.MigrationsAssembly("EldorAnnualLeave.Web");
+                    o.MigrationsAssembly("EldorAnnualLeave.Data");
                 });
             });
 
@@ -106,7 +106,7 @@ namespace EldorAnnualLeave.Web
 
             services.ConfigureApplicationCookie(options =>
             {
-                options.LoginPath = new PathString("/Home/Login");
+                options.LoginPath = new PathString("/Home/LoginPage");
                 options.LogoutPath = new PathString("/Member/Logout");
                 options.Cookie = cookieBuilder;
                 options.SlidingExpiration = true;

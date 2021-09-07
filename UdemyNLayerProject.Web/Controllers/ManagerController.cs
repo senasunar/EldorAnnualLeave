@@ -72,7 +72,7 @@ namespace EldorAnnualLeave.Web.Controllers
                 if (employee.Is_Active == 1 && employee.Is_Deleted == 0)
                 {
                     EmployeeTableViewModel etm = new EmployeeTableViewModel();
-                    etm.Employee_ID = int.Parse(employee.ID);
+                    etm.Employee_ID = employee.ID;
                     etm.Employee_Name = employee.Employee_Name;
                     etm.Employee_Surname = employee.Employee_Surname;
                     etm.Entry_Date = employee.Entry_Date;
@@ -126,7 +126,7 @@ namespace EldorAnnualLeave.Web.Controllers
         {
             var employeeTable = await _employeeService.CreateEmployeeTable();
             var email = User.FindFirstValue(ClaimTypes.Email);
-            int eID = 0;
+            string eID = "";
             int isAllowed = 0;
             int dateValidator = 0;
             //var employees = await _employeeService.GetAllAsync();
@@ -137,7 +137,7 @@ namespace EldorAnnualLeave.Web.Controllers
             {
                 if (employee.Email == email)
                 {
-                    eID = int.Parse(employee.ID);
+                    eID = employee.ID;
 
                     TimeSpan ts = enter.End_Day.Subtract(enter.Start_Day);
                     int days = ((int)ts.TotalDays);
@@ -174,7 +174,7 @@ namespace EldorAnnualLeave.Web.Controllers
             }
         }
 
-        public async Task<IActionResult> EmployeeCalendarTable(int employeeID)
+        public async Task<IActionResult> EmployeeCalendarTable(string employeeID)
         {
             var employeeCalendar = await _calendarService.CreateEmployeeCalendarTable(employeeID);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ namespace EldorAnnualLeave.Core.Repositories
 {
     public interface IRepository<TEntity> where TEntity : class
     {
-        Task<TEntity> GetByIdAsync(int id);
+        Task<TEntity> GetByIdAsync([Optional] int id, [Optional] string sid);
 
         Task<IEnumerable<TEntity>> GetAllAsync();
 
@@ -25,5 +26,11 @@ namespace EldorAnnualLeave.Core.Repositories
         void RemoveRange(IEnumerable<TEntity> entities);
 
         TEntity Update(TEntity entity);
+
+        Task AddUserAsync(TEntity entity);
+        Task<IEnumerable<TEntity>> GetAllUsersAsync();
+        Task<TEntity> GetByUserIdAsync(string id);
+        void RemoveUser(TEntity entity);
+        TEntity UpdateUser(TEntity entity);
     }
 }

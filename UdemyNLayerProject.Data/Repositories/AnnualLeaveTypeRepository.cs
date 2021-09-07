@@ -11,7 +11,7 @@ namespace EldorAnnualLeave.Data.Repositories
     public class AnnualLeaveTypeRepository : Repository<AnnualLeaveType>, IAnnualLeaveTypeRepository
     {
         private AppDbContext appDbContext { get => _context as AppDbContext; }
-        public AnnualLeaveTypeRepository(AppDbContext context) : base(context)
+        public AnnualLeaveTypeRepository(AppDbContext context, ApplicationIdentityDbContext identityContext) : base(context, identityContext)
         {
         }
     }

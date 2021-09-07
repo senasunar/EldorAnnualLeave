@@ -9,5 +9,12 @@ namespace EldorAnnualLeave.Core.Services
 {
     public interface IAppUserService : IService<AppUser>
     {
+        Task AddUserAsync(AppUser appUser);
+        Task<IEnumerable<AppUser>> GetAllUsersAsync();
+        Task<AppUser> GetByUserIdAsync(string id);
+        AppUser UpdateUser(AppUser appUser);
+        void RemoveUser(AppUser appUser);
+        public Task<List<AppUser>> CreateEmployeeTable();
+        public Task<List<AppUser>> CreateEmployeeTableMember(string email);
     }
 }

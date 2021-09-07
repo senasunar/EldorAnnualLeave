@@ -8,6 +8,6 @@ namespace EldorAnnualLeave.Core.Services
 {
     public interface ICalendarService : IService<Calendar>
     {
-        public Task<List<Calendar>> CreateEmployeeCalendarTable(int employeeID);
+        public Task<List<Calendar>> CreateEmployeeCalendarTable(string employeeID);
     }
 }

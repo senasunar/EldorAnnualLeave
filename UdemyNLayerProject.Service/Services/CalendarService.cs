@@ -24,14 +24,16 @@ namespace EldorAnnualLeave.Service.Services
             _employeeRepository = employeeRepository;
         }
 
-        public async Task<List<Calendar>> CreateEmployeeCalendarTable(int employeeID)
+        public async Task<List<Calendar>> CreateEmployeeCalendarTable(string employeeID)
         {
             var getAllCalendar = await _calendarRepository.GetAllAsync();
             List<Calendar> requestedCalendar = new List<Calendar>();
 
             foreach (var calendar in getAllCalendar)
             {
-                if (calendar.Employee_ID == employeeID) requestedCalendar.Add(calendar);
+                int calEmployeeID = int.Parse(calendar.Employee_ID);
+                int parameterEmployeeID = int.Parse(employeeID);
+                if (calEmployeeID == parameterEmployeeID) requestedCalendar.Add(calendar);
             }
 
             return requestedCalendar;

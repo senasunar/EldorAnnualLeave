@@ -16,5 +16,23 @@ namespace EldorAnnualLeave.Core.Models
         public DateTime Entry_Date { get; set; }
         public int Is_Deleted { get; set; }
         public int Is_Active { get; set; }
+
+        [NotMapped]
+        public List<Calendar> Calendar { get; set; }
+
+        [NotMapped]
+        public int totalLeave { get; set; }
+
+        [NotMapped]
+        public int usedLeave { get; set; }
+
+        [NotMapped]
+        public int plannedLeave { get; set; }
+
+        [NotMapped]
+        public int restOfLeave { get; set; }
+
+        [NotMapped]
+        public int annualLeave { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace EldorAnnualLeave.Data.Repositories
     public class CalendarRepository : Repository<Calendar>, ICalendarRepository
     {
         private AppDbContext appDbContext { get => _context as AppDbContext; }
-        public CalendarRepository(AppDbContext context) : base(context)
+        public CalendarRepository(AppDbContext context, ApplicationIdentityDbContext identityContext) : base(context, identityContext)
         {
         }
     }

@@ -9,7 +9,7 @@ namespace EldorAnnualLeave.Core.Models
     public class Calendar
     {
         public int ID { get; set; }
-        public int Employee_ID { get; set; }
+        public string Employee_ID { get; set; }
         public DateTime Start_Day { get; set; }
         public DateTime End_Day { get; set; }
         public int AnnualLeaveType_ID { get; set; }

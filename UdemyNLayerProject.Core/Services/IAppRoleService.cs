@@ -9,5 +9,6 @@ namespace EldorAnnualLeave.Core.Services
 {
     public interface IAppRoleService : IService<AppRole>
     {
+        Task<IEnumerable<AppRole>> GetAllRolesAsync();
     }
 }

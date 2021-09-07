@@ -18,10 +18,6 @@ namespace EldorAnnualLeave.Data
 
         public DbSet<Employee> Employees { get; set; }
 
-        public DbSet<AnnualLeaveIncrease> LeaveAdditions { get; set; }
-
-        public DbSet<AppRole> AppRoles { get; set; }
-
-        public DbSet<AppUser> AppUsers { get; set; }
+        public DbSet<AnnualLeaveIncrease> AnnualLeaveIncreases { get; set; }
     }
 }

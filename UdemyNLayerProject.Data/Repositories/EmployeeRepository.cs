@@ -12,7 +12,7 @@ namespace EldorAnnualLeave.Data.Repositories
     public class EmployeeRepository : Repository<Employee>, IEmployeeRepository
     {
         private AppDbContext appDbContext { get => _context as AppDbContext; }
-        public EmployeeRepository(AppDbContext context) : base(context)
+        public EmployeeRepository(AppDbContext context, ApplicationIdentityDbContext identityContext) : base(context, identityContext)
         {
         }
 

@@ -9,5 +9,10 @@ namespace EldorAnnualLeave.Core.Repositories
 {
     public interface IAppUserRepository : IRepository<AppUser>
     {
+        /*Task AddUserAsync(AppUser appUser);
+        Task<IEnumerable<AppUser>> GetAllUsersAsync();
+        Task<AppUser> GetByUserIdAsync(int id);
+        void RemoveUser(AppUser appUser);
+        AppUser UpdateUser(AppUser appUser);*/
     }
 }

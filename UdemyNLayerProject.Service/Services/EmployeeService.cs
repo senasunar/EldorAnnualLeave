@@ -44,7 +44,7 @@ namespace EldorAnnualLeave.Service.Services
             }
 
             List<Employee> joined = (from emp in getAllEmployee.ToList()
-                        join calen in existCalendars on int.Parse(emp.ID) equals calen.Employee_ID into c
+                        join calen in existCalendars on int.Parse(emp.ID) equals int.Parse(calen.Employee_ID) into c
                         select new Employee()
                         {
                             Email = emp.Email,
@@ -121,7 +121,7 @@ namespace EldorAnnualLeave.Service.Services
             var getAllIncrease = await _annualLeaveIncreaseRepository.GetAllAsync();
 
             List<Employee> joined = (from emp in getAllEmployee.ToList()
-                                     join calen in getAllCalendar.ToList() on int.Parse(emp.ID) equals calen.Employee_ID into c
+                                     join calen in getAllCalendar.ToList() on int.Parse(emp.ID) equals int.Parse(calen.Employee_ID) into c
                                      select new Employee()
                                      {
                                          Email = emp.Email,

@@ -22,6 +22,8 @@ namespace EldorAnnualLeave.Web.Controllers
         private readonly IEmployeeService _employeeService;
         private readonly IAnnualLeaveTypeService _annualLeaveTypeService;
         private readonly ICalendarService _calendarService;
+        private readonly IAppUserService _appUserService;
+        private readonly IAppRoleService _appRoleService;
         private readonly IMapper _mapper;
 
         public AdminController(
@@ -29,9 +31,14 @@ namespace EldorAnnualLeave.Web.Controllers
             SignInManager<AppUser> signInManager,
             IEmployeeService employeeService, 
             IAnnualLeaveTypeService annualLeaveTypeService, 
-            ICalendarService calendarService, IMapper mapper) : base(userManager, signInManager)
+            ICalendarService calendarService, 
+            IAppUserService appUserService,
+            IAppRoleService appRoleService,
+            IMapper mapper) : base(userManager, signInManager)
         {
             _employeeService = employeeService;
+            _appUserService = appUserService;
+            _appRoleService = appRoleService;
             _annualLeaveTypeService = annualLeaveTypeService;
             _calendarService = calendarService;
             _mapper = mapper;
@@ -47,21 +54,17 @@ namespace EldorAnnualLeave.Web.Controllers
 
         public IActionResult AccessDenied(string ReturnUrl)
         {
-            if (ReturnUrl.ToLower().Contains("violencegage"))
+            if (ReturnUrl.ToLower().Contains("manager"))
             {
-                ViewBag.message = "Erişmeye çalıştığınız sayfa şiddet videoları içerdiğinden dolayı 15 yaşında büyük olmanız gerekmektedir";
+                ViewBag.message = "This page is authorized for managers!";
             }
-            else if (ReturnUrl.ToLower().Contains("ankarapage"))
+            else if (ReturnUrl.ToLower().Contains("member"))
             {
-                ViewBag.message = "Bu sayfaya sadece şehir alanı ankara olan kullanıcılar erişebilir";
-            }
-            else if (ReturnUrl.ToLower().Contains("exchange"))
-            {
-                ViewBag.message = "30 günlük ücretsiz deneme hakkınız sona ermiştir.";
+                ViewBag.message = "This page is authorized for members!";
             }
             else
             {
-                ViewBag.message = "Bu sayfaya erişim izniniz yoktur. Erişim izni almak için site yöneticisiyle görüşünüz";
+                ViewBag.message = "You are not authorized to view this page!";
             }
 
             return View();
@@ -69,7 +72,7 @@ namespace EldorAnnualLeave.Web.Controllers
 
         public async Task<IActionResult> EmployeeTable()
         {
-            var employeeTable = await _employeeService.CreateEmployeeTable();
+            var employeeTable = await _appUserService.CreateEmployeeTable();
             List<EmployeeTableViewModel> employeeTableModel = new List<EmployeeTableViewModel>();
 
             foreach (var employee in employeeTable)
@@ -77,7 +80,7 @@ namespace EldorAnnualLeave.Web.Controllers
                 if (employee.Is_Active == 1 && employee.Is_Deleted == 0)
                 {
                     EmployeeTableViewModel etm = new EmployeeTableViewModel();
-                    etm.Employee_ID = int.Parse(employee.ID);
+                    etm.Employee_ID = employee.Id;
                     etm.Employee_Name = employee.Employee_Name;
                     etm.Employee_Surname = employee.Employee_Surname;
                     etm.Entry_Date = employee.Entry_Date;
@@ -98,7 +101,7 @@ namespace EldorAnnualLeave.Web.Controllers
 
         public async Task<IActionResult> AdminEnterLeave()
         {
-            var employees = await _employeeService.GetAllAsync();
+            var employees = await _appUserService.GetAllUsersAsync();
             List<SelectListItem> employeeList = new List<SelectListItem>();
 
             foreach (var employee in employees)
@@ -137,7 +140,7 @@ namespace EldorAnnualLeave.Web.Controllers
             return View();
         }
 
-        public bool IsClashed(DateTime startDate, DateTime endDate, Employee employee)
+        public bool IsClashed(DateTime startDate, DateTime endDate, AppUser employee)
         {
             bool isClashed = false;
 
@@ -167,8 +170,8 @@ namespace EldorAnnualLeave.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AdminInsertLeave(AdminEnterLeaveViewModel enter)
         {
-            var employeeTable = await _employeeService.CreateEmployeeTable();
-            int eID = 0;
+            var employeeTable = await _appUserService.CreateEmployeeTable();
+            string eID = "";
             int isAllowed = 0;
             int dateValidator = 0;
             int isClashed = 0;
@@ -180,7 +183,7 @@ namespace EldorAnnualLeave.Web.Controllers
             {
                 if (employee.Email == enter.Employeee)
                 {
-                    eID = int.Parse(employee.ID);
+                    eID = employee.Id;
 
                     TimeSpan ts = enter.End_Day.Subtract(enter.Start_Day);
                     int days = ((int)ts.TotalDays);
@@ -224,7 +227,7 @@ namespace EldorAnnualLeave.Web.Controllers
             }
         }
 
-        public async Task<IActionResult> EmployeeCalendarTable(int employeeID)
+        public async Task<IActionResult> EmployeeCalendarTable(string employeeID)
         {
             var employeeCalendar = await _calendarService.CreateEmployeeCalendarTable(employeeID);
 
@@ -262,9 +265,45 @@ namespace EldorAnnualLeave.Web.Controllers
             return RedirectToAction("EmployeeTable");
         }
 
-        public IActionResult AddUser()
+        public async Task<IActionResult> AddUserAsync()
         {
+            var roles = await _appRoleService.GetAllRolesAsync();
+
+            List<SelectListItem> User_Role = new List<SelectListItem>();
+
+            foreach (var role in roles)
+            {
+                User_Role.Add(new SelectListItem
+                {
+                    Text = role.Name,
+                    Value = role.Id
+                });
+            }
+
+            ViewBag.User_Role = User_Role;
             return View();
+        }
+
+        public async Task<int> IDgeneratorAsync()
+        {
+            int checkID = 1;
+            int userID;
+
+            var users = await _appUserService.GetAllUsersAsync();
+
+            foreach(var user in users)
+            {
+                userID = int.Parse(user.Id);
+
+                if (userID != checkID)
+                {
+                    break;
+                }
+
+                checkID++;
+            }
+
+            return checkID;
         }
 
         [HttpPost]
@@ -273,10 +312,12 @@ namespace EldorAnnualLeave.Web.Controllers
             AppUser appUser = new AppUser();
 
             //appUser.ID = "3";
-            //var passwordHash = userManager.PasswordHasher.HashPassword(appUser, user.Password);
+            var passwordHash = userManager.PasswordHasher.HashPassword(appUser, user.Password);
+            int generatedID = await IDgeneratorAsync();
 
+            appUser.Id = generatedID.ToString();
             appUser.Email = user.Email;
-            appUser.PasswordHash = user.ToString();
+            appUser.PasswordHash = passwordHash;
             appUser.Employee_Name = user.Employee_Name;
             appUser.Employee_Surname = user.Employee_Surname;
             appUser.UserName = user.UserName;
@@ -284,12 +325,33 @@ namespace EldorAnnualLeave.Web.Controllers
             appUser.SAP_ID = user.SAP_ID;
             appUser.Is_Active = 1;
             appUser.Is_Deleted = 0;
-            
-            
+            appUser.AccessFailedCount = 0;
+            appUser.EmailConfirmed = true;
+            appUser.LockoutEnabled = true;
+            appUser.NormalizedEmail = user.Email.ToUpper();
+            appUser.NormalizedUserName = user.UserName.ToUpper();
+            appUser.PhoneNumber = "";
+            appUser.PhoneNumberConfirmed = true;
+            appUser.TwoFactorEnabled = false;
+            appUser.Entry_Date = user.Entry_Date;
 
-            //var create = await _employeeService.AddAsync(appUser);
+            await _appUserService.AddUserAsync(appUser);
 
-            return View("EmployeeTable");
+            var roles = await _appRoleService.GetAllRolesAsync();
+
+            foreach(var role in roles)
+            {
+                int roleID = int.Parse(user.User_Role);
+                int formRoleID = int.Parse(role.Id);
+
+                if(roleID == formRoleID)
+                {
+                    await userManager.AddToRoleAsync(appUser, role.Name);
+                    break;
+                }
+            }
+
+            return RedirectToAction("EmployeeTable");
         }
     }
 }

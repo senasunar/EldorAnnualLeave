@@ -12,8 +12,16 @@ namespace EldorAnnualLeave.Service.Services
 {
     public class AppRoleService : Service<Core.Models.AppRole>, IAppRoleService
     {
-        public AppRoleService(IUnitOfWork unitOfWork, IRepository<Core.Models.AppRole> repository) : base(unitOfWork, repository)
+        private readonly IRepository<AppRole> _appRoleRepository;
+
+        public AppRoleService(IUnitOfWork unitOfWork, IRepository<AppRole> repository) : base(unitOfWork, repository)
         {
+            _appRoleRepository = repository;
+        }
+
+        public async Task<IEnumerable<AppRole>> GetAllRolesAsync()
+        {
+            return await _appRoleRepository.GetAllUsersAsync();
         }
     }
 }

@@ -12,7 +12,10 @@ namespace EldorAnnualLeave.Data
     {
         public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> dbContext) : base(dbContext)
         {
-
         }
+
+        public DbSet<AppUser> AppUsers { get; set; }
+
+        public DbSet<AppRole> AppRoles { get; set; }
     }
 }

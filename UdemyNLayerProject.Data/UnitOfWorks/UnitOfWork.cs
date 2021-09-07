@@ -21,17 +21,17 @@ namespace EldorAnnualLeave.Data.UnitOfWorks
         private AppRoleRepository _appRoleRepository;
         private AppUserRepository _appUserRepository;
 
-        public IAnnualLeaveTypeRepository AnnualLeaveTypes => _annualLeaveTypeRepository = _annualLeaveTypeRepository ?? new AnnualLeaveTypeRepository(_context);
+        public IAnnualLeaveTypeRepository AnnualLeaveTypes => _annualLeaveTypeRepository = _annualLeaveTypeRepository ?? new AnnualLeaveTypeRepository(_context, _identityContext);
 
-        public ICalendarRepository Calendars => _calendarRepository = _calendarRepository ?? new CalendarRepository(_context);
+        public ICalendarRepository Calendars => _calendarRepository = _calendarRepository ?? new CalendarRepository(_context, _identityContext);
 
-        public IEmployeeRepository Employees => _employeeRepository = _employeeRepository ?? new EmployeeRepository(_context);
+        public IEmployeeRepository Employees => _employeeRepository = _employeeRepository ?? new EmployeeRepository(_context, _identityContext);
 
-        public IAnnualLeaveIncreaseRepository AnnualLeaveIncreases => _annualLeaveIncreaseRepository = _annualLeaveIncreaseRepository ?? new AnnualLeaveIncreaseRepository(_context);
+        public IAnnualLeaveIncreaseRepository AnnualLeaveIncreases => _annualLeaveIncreaseRepository = _annualLeaveIncreaseRepository ?? new AnnualLeaveIncreaseRepository(_context, _identityContext);
 
-        public IAppRoleRepository AppRoles => _appRoleRepository = _appRoleRepository ?? new AppRoleRepository(_context);
+        public IAppRoleRepository AppRoles => _appRoleRepository = _appRoleRepository ?? new AppRoleRepository(_context, _identityContext);
 
-        public IAppUserRepository AppUsers => _appUserRepository = _appUserRepository ?? new AppUserRepository(_context);
+        public IAppUserRepository AppUsers => _appUserRepository = _appUserRepository ?? new AppUserRepository(_context, _identityContext);
 
         public UnitOfWork(AppDbContext appDbContext, ApplicationIdentityDbContext appIdentityDbContext)
         {
