@@ -15,7 +15,7 @@ using EldorAnnualLeave.Data.Repositories;
 using EldorAnnualLeave.Data.UnitOfWorks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using EldorAnnualLeave.Web.Models;
+using EldorAnnualLeave.Core.Models;
 
 namespace EldorAnnualLeave.Web
 {
@@ -40,8 +40,9 @@ namespace EldorAnnualLeave.Web
             services.AddScoped<IAnnualLeaveTypeService, AnnualLeaveTypeService>();
             services.AddScoped<ICalendarService, CalendarService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
-            services.AddScoped<ILeaveAdditionService, LeaveAdditionService>();
             services.AddScoped<IAnnualLeaveIncreaseService, AnnualLeaveIncreaseService>();
+            services.AddScoped<IAppUserService, AppUserService>();
+            services.AddScoped<IAppRoleService, AppRoleService>();
 
             services.AddDbContext<AppDbContext>(options =>
             {

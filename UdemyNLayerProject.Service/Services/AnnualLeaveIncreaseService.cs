@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace EldorAnnualLeave.Service.Services
 {
-    public class AnnualLeaveIncreaseService : Service<Core.Models.AnnualLeaveIncrease>, IAnnualLeaveIncreaseService
+    public class AnnualLeaveIncreaseService : Service<AnnualLeaveIncrease>, IAnnualLeaveIncreaseService
     {
-        public AnnualLeaveIncreaseService(IUnitOfWork unitOfWork, IRepository<Core.Models.AnnualLeaveIncrease> repository) : base(unitOfWork, repository)
+        public AnnualLeaveIncreaseService(IUnitOfWork unitOfWork, IRepository<AnnualLeaveIncrease> repository) : base(unitOfWork, repository)
         {
         }
     }

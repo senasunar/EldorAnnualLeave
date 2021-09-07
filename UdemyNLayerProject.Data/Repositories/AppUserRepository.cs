@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace EldorAnnualLeave.Data.Repositories
 {
-    public class LeaveAdditionRepository : Repository<LeaveAddition>, ILeaveAdditionRepository
+    public class AppUserRepository : Repository<AppUser>, IAppUserRepository
     {
         private AppDbContext appDbContext { get => _context as AppDbContext; }
-        public LeaveAdditionRepository(AppDbContext context) : base(context)
+        public AppUserRepository(AppDbContext context) : base(context)
         {
         }
     }

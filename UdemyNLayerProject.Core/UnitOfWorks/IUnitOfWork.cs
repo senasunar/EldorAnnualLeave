@@ -11,11 +11,14 @@ namespace EldorAnnualLeave.Core.UnitOfWorks
         IAnnualLeaveTypeRepository AnnualLeaveTypes { get; }
         ICalendarRepository Calendars { get; }
         IEmployeeRepository Employees { get; }
-        ILeaveAdditionRepository LeaveAdditions { get; }
         IAnnualLeaveIncreaseRepository AnnualLeaveIncreases { get; }
+        IAppRoleRepository AppRoles { get; }
+        IAppUserRepository AppUsers { get; }
 
         Task CommitAsync();
+        Task CommitAsyncIdentity();
 
+        void CommitIdentity();
         void Commit();
     }
 }

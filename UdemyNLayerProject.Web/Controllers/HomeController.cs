@@ -11,7 +11,7 @@ using EldorAnnualLeave.Controllers;
 using System.Security.Claims;
 using EldorAnnualLeave.Web.ViewModels;
 using Microsoft.AspNetCore.Routing;
-using EldorAnnualLeave.Web.Models;
+using EldorAnnualLeave.Core.Models;
 
 namespace EldorAnnualLeave.Web.Controllers
 {

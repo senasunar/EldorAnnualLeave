@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EldorAnnualLeave.Web.Models
+namespace EldorAnnualLeave.Web.ViewModels
 {
-    public class EmployeeTableModel
+    public class EmployeeTableViewModel
     {
         public int Employee_ID { get; set; }
         public int Annual_Leave { get; set; }

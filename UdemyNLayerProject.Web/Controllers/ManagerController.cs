@@ -3,7 +3,6 @@ using EldorAnnualLeave.Controllers;
 using EldorAnnualLeave.Core.Models;
 using EldorAnnualLeave.Core.Services;
 using EldorAnnualLeave.Web.DTOs;
-using EldorAnnualLeave.Web.Models;
 using EldorAnnualLeave.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -66,13 +65,13 @@ namespace EldorAnnualLeave.Web.Controllers
         public async Task<IActionResult> EmployeeTable()
         {
             var employeeTable = await _employeeService.CreateEmployeeTable();
-            List<EmployeeTableModel> employeeTableModel = new List<EmployeeTableModel>();
+            List<EmployeeTableViewModel> employeeTableModel = new List<EmployeeTableViewModel>();
 
             foreach (var employee in employeeTable)
             {
                 if (employee.Is_Active == 1 && employee.Is_Deleted == 0)
                 {
-                    EmployeeTableModel etm = new EmployeeTableModel();
+                    EmployeeTableViewModel etm = new EmployeeTableViewModel();
                     etm.Employee_ID = int.Parse(employee.ID);
                     etm.Employee_Name = employee.Employee_Name;
                     etm.Employee_Surname = employee.Employee_Surname;

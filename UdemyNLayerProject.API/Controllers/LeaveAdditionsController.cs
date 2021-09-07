@@ -15,10 +15,10 @@ namespace EldorAnnualLeave.API.Controllers
     [Route("[controller]")]
     public class LeaveAdditionsController : ControllerBase
     {
-        private readonly ILeaveAdditionService _leaveAdditionService;
+        private readonly IAnnualLeaveIncreaseService _leaveAdditionService;
         private readonly IMapper _mapper;
 
-        public LeaveAdditionsController(ILeaveAdditionService leaveAdditionService, IMapper mapper)
+        public LeaveAdditionsController(IAnnualLeaveIncreaseService leaveAdditionService, IMapper mapper)
         {
             _leaveAdditionService = leaveAdditionService;
             _mapper = mapper;
@@ -41,7 +41,7 @@ namespace EldorAnnualLeave.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Save(LeaveAdditionDto leaveAdditionDto)
         {
-            var newLeaveAddition = await _leaveAdditionService.AddAsync(_mapper.Map<LeaveAddition>(leaveAdditionDto));
+            var newLeaveAddition = await _leaveAdditionService.AddAsync(_mapper.Map<AnnualLeaveIncrease>(leaveAdditionDto));
             return Created(string.Empty, _mapper.Map<LeaveAdditionDto>(newLeaveAddition));
         }
 
@@ -49,7 +49,7 @@ namespace EldorAnnualLeave.API.Controllers
         public IActionResult Update(LeaveAdditionDto leaveAdditionDto)
 
         {
-            var category = _leaveAdditionService.Update(_mapper.Map<LeaveAddition>(leaveAdditionDto));
+            var category = _leaveAdditionService.Update(_mapper.Map<AnnualLeaveIncrease>(leaveAdditionDto));
             return NoContent();
         }
 

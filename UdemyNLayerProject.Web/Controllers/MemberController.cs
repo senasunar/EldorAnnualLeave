@@ -19,7 +19,6 @@ using EldorAnnualLeave.Web.Filters;
 using AutoMapper;
 using EldorAnnualLeave.Service.Services;
 using System.Data;
-using EldorAnnualLeave.Web.Models;
 
 namespace EldorAnnualLeave.Controllers
 {
@@ -110,13 +109,13 @@ namespace EldorAnnualLeave.Controllers
             var email = User.FindFirstValue(ClaimTypes.Email);
 
             var employeeTable =  await _employeeService.CreateEmployeeTableMember(email);
-            List<EmployeeTableModel> employeeTableModel = new List<EmployeeTableModel>();
+            List<EmployeeTableViewModel> employeeTableModel = new List<EmployeeTableViewModel>();
 
             foreach (var employee in employeeTable)
             {
                 if(employee.Is_Active == 1 && employee.Is_Deleted == 0)
                 {
-                    EmployeeTableModel etm = new EmployeeTableModel();
+                    EmployeeTableViewModel etm = new EmployeeTableViewModel();
                     etm.Employee_ID = int.Parse(employee.ID);
                     etm.Employee_Name = employee.Employee_Name;
                     etm.Employee_Surname = employee.Employee_Surname;

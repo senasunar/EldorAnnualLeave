@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EldorAnnualLeave.Web.Models
+namespace EldorAnnualLeave.Core.Models
 {
     public class AppRole : IdentityRole
     {

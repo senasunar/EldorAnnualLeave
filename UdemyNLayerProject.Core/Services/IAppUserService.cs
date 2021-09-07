@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EldorAnnualLeave.Core.Repositories
+namespace EldorAnnualLeave.Core.Services
 {
-    public interface ILeaveAdditionRepository : IRepository<LeaveAddition>
+    public interface IAppUserService : IService<AppUser>
     {
     }
 }

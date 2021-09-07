@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EldorAnnualLeave.Core.Services
 {
-    public interface ILeaveAdditionService : IService<LeaveAddition>
+    public interface IAppRoleService : IService<AppRole>
     {
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using EldorAnnualLeave.Web.Models;
+using EldorAnnualLeave.Core.Models;
 
 namespace EldorAnnualLeave.Controllers
 {

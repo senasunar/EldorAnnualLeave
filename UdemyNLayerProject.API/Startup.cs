@@ -39,8 +39,8 @@ namespace EldorAnnualLeave.API
             services.AddScoped<IAnnualLeaveTypeService, AnnualLeaveTypeService>();
             services.AddScoped<ICalendarService, CalendarService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
-            services.AddScoped<ILeaveAdditionService, LeaveAdditionService>();
             services.AddScoped<IAnnualLeaveIncreaseService, AnnualLeaveIncreaseService>();
+            services.AddScoped<IAppUserService, AppRoleService>();
 
             services.AddDbContext<AppDbContext>(options =>
             {

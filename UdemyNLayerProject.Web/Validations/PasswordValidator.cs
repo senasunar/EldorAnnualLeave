@@ -1,4 +1,4 @@
-﻿using EldorAnnualLeave.Web.Models;
+﻿using EldorAnnualLeave.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
