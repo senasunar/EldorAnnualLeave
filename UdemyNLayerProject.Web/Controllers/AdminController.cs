@@ -372,5 +372,146 @@ namespace EldorAnnualLeave.Web.Controllers
 
             return RedirectToAction("EmployeeTable");
         }
+
+        public async Task<IActionResult> UpdateUserAll()
+        {
+            var users = await _appUserService.GetAllUsersAsync();
+
+            List<SelectListItem> User_List = new List<SelectListItem>();
+
+            foreach (var user in users)
+            {
+                string nameSurname = user.Employee_Name + " " + user.Employee_Surname;
+
+                User_List.Add(new SelectListItem
+                {
+                    Text = nameSurname,
+                    Value = user.Id
+                });
+            }
+
+            ViewBag.User_List = User_List;
+
+            return View();
+        }
+
+        public IActionResult UpdateUserPersonal(AppUser user)
+        {
+            ViewBag.user = user;
+
+            return View();
+        }
+
+        public async Task<IActionResult> UpdateUserPersonalDBAsync(UpdatePersonalViewModel updatePersonal)
+        {
+            var user = await _appUserService.GetByUserIdAsync(updatePersonal.Id);
+            user.Employee_Name = updatePersonal.Employee_Name;
+            user.Employee_Surname = updatePersonal.Employee_Surname;
+            user.UserName = updatePersonal.UserName;
+            user.Email = updatePersonal.Email;
+
+            var updatedUser = _appUserService.UpdateUser(user);
+
+            TempData["inform"] = "Personal information is updated!";
+
+            return RedirectToAction("UpdateUserAll");
+        }
+
+        public async Task<IActionResult> UpdateUserRole(AppUser user)
+        {
+            var roles = await _appRoleService.GetAllRolesAsync();
+
+            List<SelectListItem> User_Role = new List<SelectListItem>();
+
+            foreach (var role in roles)
+            {
+                User_Role.Add(new SelectListItem
+                {
+                    Text = role.Name,
+                    Value = role.Id
+                });
+            }
+
+            ViewBag.User_Role = User_Role;
+            ViewBag.user = user;
+
+            return View();
+        }
+
+        public async Task<IActionResult> UpdateUserRoleDB(UpdateRoleViewModel updateRole)
+        {
+            var user = await _appUserService.GetByUserIdAsync(updateRole.Id);
+
+            var roles = await _appRoleService.GetAllRolesAsync();
+            var currentRoles = await userManager.GetRolesAsync(user);
+
+            foreach (var role in currentRoles)
+            {
+                await userManager.RemoveFromRoleAsync(user, role);
+            }
+
+            foreach (var role in roles)
+            {
+                int roleID = int.Parse(updateRole.User_Role);
+                int formRoleID = int.Parse(role.Id);
+
+                if (roleID == formRoleID)
+                {
+                    await userManager.AddToRoleAsync(user, role.Name);
+                    break;
+                }
+            }
+
+            TempData["inform"] = "User role is changed!";
+
+            return RedirectToAction("UpdateUserAll");
+        }
+
+        public IActionResult UpdateUserPassword(AppUser user)
+        {
+            ViewBag.user = user;
+            if (TempData["error"] != null) ViewBag.error = TempData["error"].ToString();
+
+            return View();
+        }
+
+        public async Task<IActionResult> UpdateUserPasswordDB(UpdatePasswordViewModel updatePassword)
+        {
+            var user = await _appUserService.GetByUserIdAsync(updatePassword.Id);
+            var currentPasswordHash = userManager.PasswordHasher.HashPassword(user, updatePassword.CurrentPassword);
+            var newPasswordHash = userManager.PasswordHasher.HashPassword(user, updatePassword.Password);
+            var newPasswordAgainHash = userManager.PasswordHasher.HashPassword(user, updatePassword.PasswordAgain);
+
+            if (String.Compare(currentPasswordHash, user.PasswordHash) != 0)
+            {
+                TempData["error"] = "Current password is wrong!";
+                return RedirectToAction("UpdateUserPassword");
+            }
+
+            if (String.Compare(newPasswordHash, newPasswordAgainHash) != 0)
+            {
+                TempData["error"] = "New passwords are not matched!";
+                return RedirectToAction("UpdateUserPassword");
+            }
+
+            if (String.Compare(newPasswordHash, currentPasswordHash) != 0)
+            {
+                TempData["error"] = "New password cannot be the same with the previous password!";
+                return RedirectToAction("UpdateUserPassword");
+            }
+
+            user.PasswordHash = newPasswordHash;
+            var result = _appUserService.UpdateUser(user);
+            TempData["inform"] = "Password is changed!";
+
+            return RedirectToAction("UpdateUserAll");
+        }
+
+        public IActionResult UpdateUserSituation(AppUser user)
+        {
+            ViewBag.user = user;
+
+            return View();
+        }
     }
 }

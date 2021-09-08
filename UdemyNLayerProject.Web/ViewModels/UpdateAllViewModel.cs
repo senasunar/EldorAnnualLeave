@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace EldorAnnualLeave.Web.ViewModels
 {
-    public class MemberViewModel
+    public class UpdateAllViewModel
     {
-        public string username { get; set; }
+        public string Id { get; set; }
     }
 }
