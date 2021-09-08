@@ -395,14 +395,15 @@ namespace EldorAnnualLeave.Web.Controllers
             return View();
         }
 
-        public IActionResult UpdateUserPersonal(AppUser user)
+        public async Task<IActionResult> UpdateUserPersonal(UpdateAllViewModel updateAll)
         {
+            var user = await _appUserService.GetByUserIdAsync(updateAll.Id);
             ViewBag.user = user;
 
             return View();
         }
 
-        public async Task<IActionResult> UpdateUserPersonalDBAsync(UpdatePersonalViewModel updatePersonal)
+        public async Task<IActionResult> UpdateUserPersonalDB(UpdatePersonalViewModel updatePersonal)
         {
             var user = await _appUserService.GetByUserIdAsync(updatePersonal.Id);
             user.Employee_Name = updatePersonal.Employee_Name;
@@ -417,9 +418,10 @@ namespace EldorAnnualLeave.Web.Controllers
             return RedirectToAction("UpdateUserAll");
         }
 
-        public async Task<IActionResult> UpdateUserRole(AppUser user)
+        public async Task<IActionResult> UpdateUserRole(UpdateAllViewModel updateAll)
         {
             var roles = await _appRoleService.GetAllRolesAsync();
+            var user = await _appUserService.GetByUserIdAsync(updateAll.Id);
 
             List<SelectListItem> User_Role = new List<SelectListItem>();
 
@@ -467,8 +469,10 @@ namespace EldorAnnualLeave.Web.Controllers
             return RedirectToAction("UpdateUserAll");
         }
 
-        public IActionResult UpdateUserPassword(AppUser user)
+        public async Task<IActionResult> UpdateUserPassword(UpdateAllViewModel updateAll)
         {
+            var user = await _appUserService.GetByUserIdAsync(updateAll.Id);
+            
             ViewBag.user = user;
             if (TempData["error"] != null) ViewBag.error = TempData["error"].ToString();
 
@@ -478,31 +482,40 @@ namespace EldorAnnualLeave.Web.Controllers
         public async Task<IActionResult> UpdateUserPasswordDB(UpdatePasswordViewModel updatePassword)
         {
             var user = await _appUserService.GetByUserIdAsync(updatePassword.Id);
-            var currentPasswordHash = userManager.PasswordHasher.HashPassword(user, updatePassword.CurrentPassword);
-            var newPasswordHash = userManager.PasswordHasher.HashPassword(user, updatePassword.Password);
-            var newPasswordAgainHash = userManager.PasswordHasher.HashPassword(user, updatePassword.PasswordAgain);
+            var passwordCheck = await userManager.CheckPasswordAsync(user, updatePassword.CurrentPassword);
+            var newPasswordCheck = await userManager.CheckPasswordAsync(user, updatePassword.Password);
 
-            if (String.Compare(currentPasswordHash, user.PasswordHash) != 0)
+            if (!passwordCheck)
             {
                 TempData["error"] = "Current password is wrong!";
-                return RedirectToAction("UpdateUserPassword");
+                UpdateAllViewModel updateAll = new UpdateAllViewModel();
+                updateAll.Id = updatePassword.Id;
+
+                return RedirectToAction("UpdateUserPassword", updateAll);
             }
 
-            if (String.Compare(newPasswordHash, newPasswordAgainHash) != 0)
+            if (String.Compare(updatePassword.Password, updatePassword.PasswordAgain) != 0)
             {
                 TempData["error"] = "New passwords are not matched!";
-                return RedirectToAction("UpdateUserPassword");
+                UpdateAllViewModel updateAll = new UpdateAllViewModel();
+                updateAll.Id = updatePassword.Id;
+
+                return RedirectToAction("UpdateUserPassword", updateAll);
             }
 
-            if (String.Compare(newPasswordHash, currentPasswordHash) != 0)
+            if (newPasswordCheck)
             {
                 TempData["error"] = "New password cannot be the same with the previous password!";
-                return RedirectToAction("UpdateUserPassword");
+                UpdateAllViewModel updateAll = new UpdateAllViewModel();
+                updateAll.Id = updatePassword.Id;
+
+                return RedirectToAction("UpdateUserPassword", updateAll);
             }
 
-            user.PasswordHash = newPasswordHash;
-            var result = _appUserService.UpdateUser(user);
-            TempData["inform"] = "Password is changed!";
+            IdentityResult result = userManager.ChangePasswordAsync(user, updatePassword.CurrentPassword, updatePassword.Password).Result;
+
+            if(result.Succeeded) TempData["inform"] = "Password is changed!";
+            else TempData["inform"] = "Failed! Please follow the password rules!"; //needs spesification
 
             return RedirectToAction("UpdateUserAll");
         }

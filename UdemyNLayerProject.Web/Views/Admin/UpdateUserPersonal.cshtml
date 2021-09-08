@@ -10,7 +10,7 @@
         <h4>Update User</h4>
         <hr />
         <h5>@ViewBag.error</h5>
-        <form asp-action="UpdatePersonalDB" method="post">
+        <form asp-action="UpdateUserPersonalDB" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div>
                 <input type="hidden" asp-for="Id" value="@ViewBag.user.Id" />

@@ -1,5 +1,28 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model UpdateRoleViewModel
 @{
+    ViewData["Title"] = "UpdateUserRole";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
 }
+
+<div class="row">
+
+    <div class="col-md-4 offset-md-4">
+        <h4>Update User Role</h4>
+        <hr />
+        <h5>@ViewBag.error</h5>
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div>
+                <input type="hidden" asp-for="Id" value="@ViewBag.user.Id" />
+            </div>
+            <div class="form-group">
+                <label asp-for="User_Role" class="control-label"></label>
+                @Html.DropDownList("User_Role", (IEnumerable<SelectListItem>)ViewBag.User_Role, "Select", htmlAttributes: new { @class = "form-control" })
+                <span asp-validation-for="User_Role" class="text-danger"></span>
+            </div>
+            <div>
+                <input type="submit" value="Update Role" class="btn btn-primary" asp-action="UpdateUserRoleDB" />
+            </div>
+        </form>
+    </div>
+</div>
