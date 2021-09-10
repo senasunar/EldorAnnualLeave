@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EldorAnnualLeave.Web</title>
+    <title>@ViewData["Title"] - EldorAnnualLeave</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
@@ -19,11 +19,21 @@
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Admin" asp-action="EmployeeTable">Employee Table</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Admin" asp-action="AddUser">Add User</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Admin" asp-action="UpdateUserAll">Update User</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                User
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <form asp-area="" asp-controller="Admin" asp-action="AddUser" method="post">
+                                    <button type="submit" class="dropdown-item btn btn-info btn-sm">Add User</button>
+                                </form>
+                                <form asp-area="" asp-controller="Admin" asp-action="UpdateUserAll" method="post">
+                                    <button type="submit" class="dropdown-item btn btn-info btn-sm">Update User</button>
+                                </form>
+                                <form asp-area="" asp-controller="Admin" asp-action="UserOperation" method="post">
+                                    <button type="submit" class="dropdown-item btn btn-info btn-sm">User Operations</button>
+                                </form>
+                            </div>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Admin" asp-action="AdminEnterLeave">Enter Leave</a>

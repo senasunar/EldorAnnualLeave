@@ -391,6 +391,7 @@ namespace EldorAnnualLeave.Web.Controllers
             }
 
             ViewBag.User_List = User_List;
+            if (TempData["inform"] != null) ViewBag.inform = TempData["inform"].ToString();
 
             return View();
         }
@@ -474,7 +475,7 @@ namespace EldorAnnualLeave.Web.Controllers
             var user = await _appUserService.GetByUserIdAsync(updateAll.Id);
             
             ViewBag.user = user;
-            if (TempData["error"] != null) ViewBag.error = TempData["error"].ToString();
+            if (TempData["passwordError"] != null) ViewBag.error = TempData["passwordError"].ToString();
 
             return View();
         }
@@ -487,7 +488,7 @@ namespace EldorAnnualLeave.Web.Controllers
 
             if (!passwordCheck)
             {
-                TempData["error"] = "Current password is wrong!";
+                TempData["passwordError"] = "Current password is wrong!";
                 UpdateAllViewModel updateAll = new UpdateAllViewModel();
                 updateAll.Id = updatePassword.Id;
 
@@ -496,7 +497,7 @@ namespace EldorAnnualLeave.Web.Controllers
 
             if (String.Compare(updatePassword.Password, updatePassword.PasswordAgain) != 0)
             {
-                TempData["error"] = "New passwords are not matched!";
+                TempData["passwordError"] = "New passwords are not matched!";
                 UpdateAllViewModel updateAll = new UpdateAllViewModel();
                 updateAll.Id = updatePassword.Id;
 
@@ -505,7 +506,7 @@ namespace EldorAnnualLeave.Web.Controllers
 
             if (newPasswordCheck)
             {
-                TempData["error"] = "New password cannot be the same with the previous password!";
+                TempData["passwordError"] = "New password cannot be the same with the previous password!";
                 UpdateAllViewModel updateAll = new UpdateAllViewModel();
                 updateAll.Id = updatePassword.Id;
 
@@ -520,11 +521,51 @@ namespace EldorAnnualLeave.Web.Controllers
             return RedirectToAction("UpdateUserAll");
         }
 
-        public IActionResult UpdateUserSituation(AppUser user)
+        public async Task<IActionResult> UserOperation()
         {
-            ViewBag.user = user;
+            var users = await _appUserService.GetAllUsersAsync();
+
+            List<SelectListItem> User_List = new List<SelectListItem>();
+
+            foreach (var user in users)
+            {
+                string nameSurname = user.Employee_Name + " " + user.Employee_Surname;
+
+                User_List.Add(new SelectListItem
+                {
+                    Text = nameSurname,
+                    Value = user.Id
+                });
+            }
+
+            ViewBag.User_List = User_List;
+            if (TempData["inform"] != null) ViewBag.error = TempData["inform"].ToString();
 
             return View();
+        }
+
+        public async Task<IActionResult> DeleteUser(UserOperationViewModel userOperation)
+        {
+            var user = await _appUserService.GetByUserIdAsync(userOperation.Id);
+            user.Is_Deleted = 1;
+
+            var updatedUser = _appUserService.UpdateUser(user);
+
+            TempData["inform"] = "User is deleted!";
+
+            return RedirectToAction("UserOperation");
+        }
+
+        public async Task<IActionResult> InactiveUser(UserOperationViewModel userOperation)
+        {
+            var user = await _appUserService.GetByUserIdAsync(userOperation.Id);
+            user.Is_Active = 0;
+            
+            var updatedUser = _appUserService.UpdateUser(user);
+
+            TempData["inform"] = "User is inactivated!";
+
+            return RedirectToAction("UserOperation");
         }
     }
 }

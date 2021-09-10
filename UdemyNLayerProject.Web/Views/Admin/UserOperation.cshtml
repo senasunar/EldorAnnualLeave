@@ -1,15 +1,15 @@
-﻿@model UpdateAllViewModel
+﻿@model UserOperationViewModel
 @{
-    ViewData["Title"] = "UpdateUserAll";
+    ViewData["Title"] = "UserOperation";
     Layout = "~/Views/Admin/_AdminLayout.cshtml";
 }
 
 <div class="row">
 
     <div class="col-md-4 offset-md-4">
-        <h4>Update User</h4>
+        <h4>User Operations<h4>
         <hr />
-        <h5>@ViewBag.inform</h5>
+        <h5>@ViewBag.error</h5>
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -18,13 +18,10 @@
                 <span asp-validation-for="Id" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Update User" class="btn btn-primary" asp-action="UpdateUserPersonal" />
+                <input type="submit" value="Delete User" class="btn btn-primary" asp-action="DeleteUser" />
             </div>
             <div>
-                <input type="submit" value="Update Role" class="btn btn-primary" asp-action="UpdateUserRole" />
-            </div>
-            <div>
-                <input type="submit" value="Update Password" class="btn btn-primary" asp-action="UpdateUserPassword" />
+                <input type="submit" value="Inactive User" class="btn btn-primary" asp-action="InactiveUser" />
             </div>
         </form>
     </div>
