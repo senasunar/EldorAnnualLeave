@@ -107,11 +107,11 @@ namespace EldorAnnualLeave.Web
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = new PathString("/Home/LoginPage");
-                options.LogoutPath = new PathString("/Member/Logout");
+                //options.LogoutPath = new PathString("/Member/Logout");
                 options.Cookie = cookieBuilder;
                 options.SlidingExpiration = true;
                 options.ExpireTimeSpan = System.TimeSpan.FromDays(60);
-                options.AccessDeniedPath = new PathString("/AccessDenied");
+                options.AccessDeniedPath = new PathString("/Home/AccessDenied");
             });
 
             services.AddControllersWithViews();

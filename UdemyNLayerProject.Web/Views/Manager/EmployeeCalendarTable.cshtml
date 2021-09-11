@@ -20,6 +20,8 @@
             <th>Start Day</th>
             <th>End Day</th>
             <th>Total</th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -38,6 +40,12 @@
                 <td>
                     @Html.DisplayFor(modelItem => b.total)
                 </td>
+                <td>
+                    @Html.ActionLink("Update", "EmployeeCalendarTable", "Manager", new { ID = b.ID })
+                </td>
+                <td>
+                    @Html.ActionLink("Delete", "DeleteCalendarRecord", "Manager", new { ID = b.ID })
+                </td>
             </tr>
         }
     </tbody>
@@ -53,9 +61,6 @@
     <script>
         $(document).ready(function () {
             $("#dataTable").dataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Turkish.json"
-                },
                 "searching": true,
                 "ordering": true,
                 "paging": true,

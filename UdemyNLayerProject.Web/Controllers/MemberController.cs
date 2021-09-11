@@ -28,13 +28,25 @@ namespace EldorAnnualLeave.Controllers
         private readonly IEmployeeService _employeeService;
         private readonly IAnnualLeaveTypeService _annualLeaveTypeService;
         private readonly ICalendarService _calendarService;
+        private readonly IAppUserService _appUserService;
+        private readonly IAppRoleService _appRoleService;
         private readonly IMapper _mapper;
 
-        public MemberController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IEmployeeService employeeService, IAnnualLeaveTypeService annualLeaveTypeService, ICalendarService calendarService, IMapper mapper) : base(userManager, signInManager)
+        public MemberController(
+            UserManager<AppUser> userManager, 
+            SignInManager<AppUser> signInManager, 
+            IEmployeeService employeeService, 
+            IAnnualLeaveTypeService annualLeaveTypeService, 
+            ICalendarService calendarService,
+            IAppUserService appUserService,
+            IAppRoleService appRoleService,
+            IMapper mapper) : base(userManager, signInManager)
         {
             _employeeService = employeeService;
             _annualLeaveTypeService = annualLeaveTypeService;
             _calendarService = calendarService;
+            _appUserService = appUserService;
+            _appRoleService = appRoleService;
             _mapper = mapper;
         }
 
@@ -46,60 +58,7 @@ namespace EldorAnnualLeave.Controllers
             return RedirectToAction("LoginPage", "Home");
         }
 
-        public IActionResult AccessDenied(string ReturnUrl)
-        {
-            if (ReturnUrl.ToLower().Contains("violencegage"))
-            {
-                ViewBag.message = "Erişmeye çalıştığınız sayfa şiddet videoları içerdiğinden dolayı 15 yaşında büyük olmanız gerekmektedir";
-            }
-            else if (ReturnUrl.ToLower().Contains("ankarapage"))
-            {
-                ViewBag.message = "Bu sayfaya sadece şehir alanı ankara olan kullanıcılar erişebilir";
-            }
-            else if (ReturnUrl.ToLower().Contains("exchange"))
-            {
-                ViewBag.message = "30 günlük ücretsiz deneme hakkınız sona ermiştir.";
-            }
-            else
-            {
-                ViewBag.message = "Bu sayfaya erişim izniniz yoktur. Erişim izni almak için site yöneticisiyle görüşünüz";
-            }
-
-            return View();
-        }
-
-        [Authorize(Roles = "manager,admin")]
-        public IActionResult Manager()
-        {
-            return View();
-        }
-
-        [Authorize(Roles = "editor,admin")]
-        public IActionResult Editor()
-        {
-            return View();
-        }
-
-
-        public async Task<IActionResult> ExchangeRedirect()
-        {
-            bool result = User.HasClaim(x => x.Type == "ExpireDateExchange");
-
-            if (!result)
-            {
-                Claim ExpireDateExchange = new Claim("ExpireDateExchange", DateTime.Now.AddDays(30).Date.ToShortDateString(), ClaimValueTypes.String, "Internal");
-
-                await userManager.AddClaimAsync(CurrentUser, ExpireDateExchange);
-
-                await signInManager.SignOutAsync();
-                await signInManager.SignInAsync(CurrentUser, true);
-            }
-
-            return RedirectToAction("Exchange");
-        }
-
-        [Authorize(Policy = "ExchangePolicy")]
-        public IActionResult Exchange()
+        public IActionResult AccessDenied()
         {
             return View();
         }
@@ -108,7 +67,7 @@ namespace EldorAnnualLeave.Controllers
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
 
-            var employeeTable =  await _employeeService.CreateEmployeeTableMember(email);
+            var employeeTable =  await _appUserService.CreateEmployeeTableMember(email);
             List<EmployeeTableViewModel> employeeTableModel = new List<EmployeeTableViewModel>();
 
             foreach (var employee in employeeTable)
@@ -116,7 +75,7 @@ namespace EldorAnnualLeave.Controllers
                 if(employee.Is_Active == 1 && employee.Is_Deleted == 0)
                 {
                     EmployeeTableViewModel etm = new EmployeeTableViewModel();
-                    etm.Employee_ID = employee.ID;
+                    etm.Employee_ID = employee.Id;
                     etm.Employee_Name = employee.Employee_Name;
                     etm.Employee_Surname = employee.Employee_Surname;
                     etm.Entry_Date = employee.Entry_Date;
@@ -124,6 +83,7 @@ namespace EldorAnnualLeave.Controllers
                     etm.Rest_Of_Leave = employee.restOfLeave;
                     etm.Used_Leave = employee.usedLeave;
                     etm.Total_Leave = employee.totalLeave;
+                    etm.Annual_Leave = employee.annualLeave;
 
                     employeeTableModel.Add(etm);
                 }
@@ -156,22 +116,41 @@ namespace EldorAnnualLeave.Controllers
             return View();
         }
 
-        public bool IsClashed(DateTime startDate, DateTime endDate, Employee employee)
+        public bool IsClashed(DateTime startDate, DateTime endDate, AppUser employee)
         {
             bool isClashed = false;
 
-            
+            foreach (var calendar in employee.Calendar)
+            {
+                if (calendar.Start_Day <= startDate && startDate <= calendar.End_Day)
+                {
+                    isClashed = true;
+                    break;
+                }
 
+                if (calendar.Start_Day <= endDate && endDate <= calendar.End_Day)
+                {
+                    isClashed = true;
+                    break;
+                }
+
+                if (calendar.Start_Day >= startDate && endDate >= calendar.End_Day)
+                {
+                    isClashed = true;
+                    break;
+                }
+            }
             return isClashed;
         }
 
         [HttpPost]
         public async Task<IActionResult> InsertLeave(EnterLeaveViewModel enter)
         {
-            var employeeTable = await _employeeService.CreateEmployeeTable();
+            var employeeTable = await _appUserService.CreateEmployeeTable();
             var email = User.FindFirstValue(ClaimTypes.Email);
             string eID = "";
             int isAllowed = 0;
+            int isClashed = 0;
             int dateValidator = 0;
             //var employees = await _employeeService.GetAllAsync();
 
@@ -181,13 +160,14 @@ namespace EldorAnnualLeave.Controllers
             {
                 if (employee.Email == email)
                 {
-                    eID = employee.ID;
+                    eID = employee.Id;
 
                     TimeSpan ts = enter.End_Day.Subtract(enter.Start_Day);
                     int days = ((int)ts.TotalDays);
 
                     if (employee.restOfLeave >= days) isAllowed = 1;
-                    if (days >= 0) dateValidator = 1; 
+                    if (days >= 0) dateValidator = 1;
+                    if (IsClashed(enter.Start_Day, enter.End_Day, employee)) isClashed = 1;
 
                     break;
                 }
@@ -205,6 +185,12 @@ namespace EldorAnnualLeave.Controllers
                 return RedirectToAction("EnterLeave");
             }
 
+            else if (isClashed == 1)
+            {
+                TempData["error"] = "Date Clash!";
+                return RedirectToAction("EnterLeave");
+            }
+
             else 
             {
                 calendar.Employee_ID = eID;
@@ -214,7 +200,7 @@ namespace EldorAnnualLeave.Controllers
                 calendar.AnnualLeaveType_ID = Int32.Parse(enter.annualLeaveTypeList);
 
                 await _calendarService.AddAsync(_mapper.Map<Calendar>(calendar));
-                return RedirectToAction("Index");
+                return RedirectToAction("EmployeeTable");
             }
         }
 
@@ -226,20 +212,128 @@ namespace EldorAnnualLeave.Controllers
 
             foreach (var employee in employeeCalendar)
             {
-                var annualLeaveType = await _annualLeaveTypeService.GetByIdAsync(employee.AnnualLeaveType_ID);
+                if (employee.Is_Deleted == 0)
+                {
+                    var annualLeaveType = await _annualLeaveTypeService.GetByIdAsync(employee.AnnualLeaveType_ID);
 
-                CalendarDto calendar = new CalendarDto();
-                calendar.Start_Day = employee.Start_Day;
-                calendar.End_Day = employee.End_Day;
-                calendar.annualLeaveType = annualLeaveType.ALT_Name;
+                    CalendarDto calendar = new CalendarDto();
+                    calendar.Start_Day = employee.Start_Day;
+                    calendar.End_Day = employee.End_Day;
+                    calendar.annualLeaveType = annualLeaveType.ALT_Name;
+                    calendar.ID = employee.ID;
 
-                TimeSpan ts = calendar.End_Day.Subtract(calendar.Start_Day);
-                calendar.total = ((int)ts.TotalDays);
+                    TimeSpan ts = calendar.End_Day.Subtract(calendar.Start_Day);
+                    calendar.total = ((int)ts.TotalDays);
 
-                employeeCalendarTableModel.Add(calendar);
+                    employeeCalendarTableModel.Add(calendar);
+                }
             }
 
             return View(employeeCalendarTableModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteCalendarRecord(int ID)
+        {
+            var calendar = await _calendarService.GetByIdAsync(ID);
+            calendar.Is_Deleted = 1;
+            var result = _calendarService.Update(calendar);
+
+            return RedirectToAction("EmployeeTable");
+        }
+
+        public async Task<IActionResult> UpdateUserPersonal()
+        {
+            var users = await _appUserService.GetAllUsersAsync();
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            string Id = "";
+
+            foreach (var usr in users)
+            {
+                if (String.Compare(usr.Email, email) == 0)
+                {
+                    Id = usr.Id;
+                    break;
+                }
+            }
+
+            var user = await _appUserService.GetByUserIdAsync(Id);
+            ViewBag.user = user;
+            if (TempData["inform"] != null) ViewBag.inform = TempData["inform"].ToString();
+
+            return View();
+        }
+
+        public async Task<IActionResult> UpdateUserPersonalDB(UpdatePersonalViewModel updatePersonal)
+        {
+            var user = await _appUserService.GetByUserIdAsync(updatePersonal.Id);
+            user.Employee_Name = updatePersonal.Employee_Name;
+            user.Employee_Surname = updatePersonal.Employee_Surname;
+            user.UserName = updatePersonal.UserName;
+            user.Email = updatePersonal.Email;
+
+            var updatedUser = _appUserService.UpdateUser(user);
+
+            TempData["inform"] = "Personal information is updated!";
+
+            return RedirectToAction("UpdateUserPersonal");
+        }
+
+        public async Task<IActionResult> UpdateUserPassword()
+        {
+            var users = await _appUserService.GetAllUsersAsync();
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            string Id = "";
+
+            foreach (var usr in users)
+            {
+                if (String.Compare(usr.Email, email) == 0)
+                {
+                    Id = usr.Id;
+                    break;
+                }
+            }
+
+            ViewBag.Id = Id;
+            if (TempData["passwordError"] != null) ViewBag.error = TempData["passwordError"].ToString();
+            if (TempData["inform"] != null) ViewBag.inform = TempData["inform"].ToString();
+
+            return View();
+        }
+
+        public async Task<IActionResult> UpdateUserPasswordDB(UpdatePasswordViewModel updatePassword)
+        {
+            var user = await _appUserService.GetByUserIdAsync(updatePassword.Id);
+            var passwordCheck = await userManager.CheckPasswordAsync(user, updatePassword.CurrentPassword);
+            var newPasswordCheck = await userManager.CheckPasswordAsync(user, updatePassword.Password);
+
+            if (!passwordCheck)
+            {
+                TempData["passwordError"] = "Current password is wrong!";
+
+                return RedirectToAction("UpdateUserPassword");
+            }
+
+            if (String.Compare(updatePassword.Password, updatePassword.PasswordAgain) != 0)
+            {
+                TempData["passwordError"] = "New passwords are not matched!";
+
+                return RedirectToAction("UpdateUserPassword");
+            }
+
+            if (newPasswordCheck)
+            {
+                TempData["passwordError"] = "New password cannot be the same with the previous password!";
+
+                return RedirectToAction("UpdateUserPassword");
+            }
+
+            IdentityResult result = userManager.ChangePasswordAsync(user, updatePassword.CurrentPassword, updatePassword.Password).Result;
+
+            if (result.Succeeded) TempData["inform"] = "Password is changed!";
+            else TempData["inform"] = "Failed! Please follow the password rules!"; //needs spesification
+
+            return RedirectToAction("UpdateUserPassword");
         }
     }
 }

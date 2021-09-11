@@ -52,24 +52,6 @@ namespace EldorAnnualLeave.Web.Controllers
             return RedirectToAction("LoginPage", "Home");
         }
 
-        public IActionResult AccessDenied(string ReturnUrl)
-        {
-            if (ReturnUrl.ToLower().Contains("manager"))
-            {
-                ViewBag.message = "This page is authorized for managers!";
-            }
-            else if (ReturnUrl.ToLower().Contains("member"))
-            {
-                ViewBag.message = "This page is authorized for members!";
-            }
-            else
-            {
-                ViewBag.message = "You are not authorized to view this page!";
-            }
-
-            return View();
-        }
-
         public async Task<IActionResult> EmployeeTable()
         {
             var employeeTable = await _appUserService.CreateEmployeeTable();
@@ -566,6 +548,11 @@ namespace EldorAnnualLeave.Web.Controllers
             TempData["inform"] = "User is inactivated!";
 
             return RedirectToAction("UserOperation");
+        }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

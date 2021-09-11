@@ -145,8 +145,15 @@ namespace EldorAnnualLeave.Service.Services
             var getAllCalendar = await _calendarRepository.GetAllAsync();
             var getAllIncrease = await _annualLeaveIncreaseRepository.GetAllAsync();
 
+            List<Calendar> existCalendars = new List<Calendar>();
+
+            foreach (var cal in getAllCalendar)
+            {
+                if (cal.Is_Deleted == 0) existCalendars.Add(cal);
+            }
+
             List<AppUser> joined = (from emp in getAllEmployee.ToList()
-                                     join calen in getAllCalendar.ToList() on int.Parse(emp.Id) equals int.Parse(calen.Employee_ID) into c
+                                     join calen in existCalendars on int.Parse(emp.Id) equals int.Parse(calen.Employee_ID) into c
                                      select new AppUser()
                                      {
                                          Email = emp.Email,
@@ -210,6 +217,7 @@ namespace EldorAnnualLeave.Service.Services
                         else if (ts1.TotalDays >= 0) usedLeave += leavePeriod;
                     }
 
+                    employee.annualLeave = annualLeave;
                     employee.usedLeave = usedLeave;
                     employee.plannedLeave = plannedLeave;
                     employee.totalLeave = employee.usedLeave + employee.plannedLeave;
