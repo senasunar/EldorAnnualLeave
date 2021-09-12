@@ -3,14 +3,15 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div>
-    <h2 style="text-align: center;">YOU ARE NOT AUTHORIZED FOR THIS PAGE!</h2>
-</div>
 
-<div class="row" style="position: absolute; top: 50%; left: 50%;">
+
+<div class="row" style="margin: 0; position: absolute; top: 45%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);">
     <form method="post">
         <div>
-            <input type="submit" value="Return" style="font-size: 24px;" class="btn btn-primary" asp-controller="Home" asp-action="LoginPage" />
+            <h2 style="text-align: center;">YOU ARE NOT AUTHORIZED FOR THIS PAGE!</h2>
+            <br>
+            <br>
+            <input type="submit" value="Return" style="font-size: 24px; margin: 0; position: absolute; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);" class="btn btn-primary" asp-controller="Home" asp-action="LoginPage" />
         </div>
     </form>
 </div>

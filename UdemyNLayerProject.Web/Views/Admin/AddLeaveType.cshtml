@@ -1,0 +1,29 @@
+﻿@model AddLeaveTypeViewModel
+@{
+    ViewData["Title"] = "AddLeaveType";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+
+<div class="row">
+
+    <div class="col-md-4 offset-md-4">
+        <h4>Add Leave Type</h4>
+        <hr />
+        <form asp-action="InsertLeaveType" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ALT_Name" class="control-label"></label>
+                <input asp-for="ALT_Name" class="form-control" />
+                <span asp-validation-for="ALT_Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ALT_Color" class="control-label"></label>
+                <input asp-for="ALT_Color" class="form-control" />
+                <span asp-validation-for="ALT_Color" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Enter" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

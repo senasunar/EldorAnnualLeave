@@ -237,6 +237,23 @@ namespace EldorAnnualLeave.Web.Controllers
             return View(employeeCalendarTableModel);
         }
 
+        public async Task<IActionResult> UpdateCalendar(int ID)
+        {
+            var calendar = await _calendarService.GetByIdAsync(ID);
+            var annualLeaveType = await _annualLeaveTypeService.GetByIdAsync(calendar.AnnualLeaveType_ID);
+
+            EnterLeaveViewModel enterLeave = new EnterLeaveViewModel();
+            enterLeave.annualLeaveTypeList = annualLeaveType.ALT_Name;
+            enterLeave.Start_Day = calendar.Start_Day;
+            enterLeave.End_Day = calendar.End_Day;
+            enterLeave.Id = calendar.Employee_ID;
+            enterLeave.Calendar_ID = calendar.ID;
+
+            ViewBag.calendar = enterLeave;
+
+            return View();
+        }
+
         [HttpGet]
         public async Task<IActionResult> DeleteCalendarRecord(int ID)
         {
@@ -553,6 +570,94 @@ namespace EldorAnnualLeave.Web.Controllers
         public IActionResult AccessDenied()
         {
             return View();
+        }
+
+        public async Task<IActionResult> AnnualLeaveTypeTable()
+        {
+            var annualLeaveTypes = await _annualLeaveTypeService.CreateLeaveTypeTable();
+
+            List<AnnualLeaveTypeDto> annualLeaveTypeTable = new List<AnnualLeaveTypeDto>();
+
+            foreach (var annualLeaveType in annualLeaveTypes)
+            {
+                if (annualLeaveType.Is_Deleted == 0 && annualLeaveType.Is_Active == 1)
+                {
+                    AnnualLeaveTypeDto leaveTypeDto = new AnnualLeaveTypeDto();
+                    leaveTypeDto.ALT_Name = annualLeaveType.ALT_Name;
+                    leaveTypeDto.ALT_Color = annualLeaveType.ALT_Color;
+                    annualLeaveTypeTable.Add(leaveTypeDto);
+                }
+            }
+
+            return View(annualLeaveTypeTable);
+        }
+
+        public IActionResult AddLeaveType()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> InsertLeaveType(AddLeaveTypeViewModel addLeave)
+        {
+            AnnualLeaveType annualLeave = new AnnualLeaveType();
+            annualLeave.Is_Deleted = 0;
+            annualLeave.Is_Active = 1;
+            annualLeave.ALT_Name = addLeave.ALT_Name;
+            annualLeave.ALT_Color = addLeave.ALT_Color;
+
+            await _annualLeaveTypeService.AddAsync(annualLeave);
+
+            return RedirectToAction("AnnualLeaveTypeTable");
+        }
+
+        public async Task<IActionResult> LeaveOperation()
+        {
+            var leaves = await _annualLeaveTypeService.GetAllAsync();
+
+            List<SelectListItem> LeaveType_List = new List<SelectListItem>();
+
+            foreach (var leave in leaves)
+            {
+                if(leave.Is_Deleted == 0)
+                {
+                    LeaveType_List.Add(new SelectListItem
+                    {
+                        Text = leave.ALT_Name,
+                        Value = leave.ID.ToString()
+                    });
+                }
+            }
+
+            ViewBag.LeaveType_List = LeaveType_List;
+            if (TempData["inform"] != null) ViewBag.error = TempData["inform"].ToString();
+
+            return View();
+        }
+
+        public async Task<IActionResult> DeleteLeaveType(LeaveOperationViewModel leaveOperation)
+        {
+            int leaveID = int.Parse(leaveOperation.Id);
+            var leave = await _annualLeaveTypeService.GetByIdAsync(leaveID);
+            leave.Is_Deleted = 1;
+
+            var updatedLeave = _annualLeaveTypeService.Update(leave);
+
+            TempData["inform"] = "Leave is deleted!";
+
+            return RedirectToAction("LeaveOperation");
+        }
+
+        public async Task<IActionResult> InactiveLeaveType(LeaveOperationViewModel leaveOperation)
+        {
+            int leaveID = int.Parse(leaveOperation.Id);
+            var leave = await _annualLeaveTypeService.GetByIdAsync(leaveID);
+            leave.Is_Active = 0;
+
+            var updatedLeave = _annualLeaveTypeService.Update(leave);
+
+            TempData["inform"] = "Leave is inactivated!";
+
+            return RedirectToAction("LeaveOperation");
         }
     }
 }
