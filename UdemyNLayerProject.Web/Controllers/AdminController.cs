@@ -243,15 +243,89 @@ namespace EldorAnnualLeave.Web.Controllers
             var annualLeaveType = await _annualLeaveTypeService.GetByIdAsync(calendar.AnnualLeaveType_ID);
 
             EnterLeaveViewModel enterLeave = new EnterLeaveViewModel();
-            enterLeave.annualLeaveTypeList = annualLeaveType.ALT_Name;
+            enterLeave.annualLeaveTypeList = annualLeaveType.ID.ToString();
             enterLeave.Start_Day = calendar.Start_Day;
             enterLeave.End_Day = calendar.End_Day;
             enterLeave.Id = calendar.Employee_ID;
-            enterLeave.Calendar_ID = calendar.ID;
+            enterLeave.Calendar_ID = ID;
 
-            ViewBag.calendar = enterLeave;
+            var leaves = await _annualLeaveTypeService.GetAllAsync();
+            List<SelectListItem> ddleaves = new List<SelectListItem>();
 
-            return View();
+            foreach (var leave in leaves)
+            {
+                if (leave.Is_Deleted == 0 && leave.Is_Active == 1)
+                {
+                    ddleaves.Add(new SelectListItem
+                    {
+                        Text = leave.ALT_Name,
+                        Value = leave.ID.ToString()
+                    });
+                }
+            }
+
+            if (TempData["error"] != null) ViewBag.error = TempData["error"].ToString();
+            enterLeave.ALselectList = ddleaves;
+            return View(enterLeave);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateCalendarDB(EnterLeaveViewModel enter)
+        {
+            var employeeTable = await _appUserService.CreateEmployeeTable();
+            string eID = "";
+            int isAllowed = 0;
+            int dateValidator = 0;
+            int isClashed = 0;
+            //var employees = await _employeeService.GetAllAsync();
+
+            //Calendar calendar = new Calendar();
+            var calendar = await _calendarService.GetByIdAsync(enter.Calendar_ID);
+
+            foreach (var employee in employeeTable)
+            {
+                if (employee.Id == enter.Id)
+                {
+                    eID = employee.Id;
+
+                    TimeSpan ts = enter.End_Day.Subtract(enter.Start_Day);
+                    int days = ((int)ts.TotalDays);
+
+                    if (employee.restOfLeave >= days) isAllowed = 1;
+                    if (days >= 0) dateValidator = 1;
+                    if (IsClashed(enter.Start_Day, enter.End_Day, employee)) isClashed = 1;
+
+                    break;
+                }
+            }
+
+            if (isAllowed == 0)
+            {
+                TempData["error"] = "Do not have enough leave!";
+                return RedirectToAction("UpdateCalendar", new { ID = calendar.ID });
+            }
+
+            else if (dateValidator == 0)
+            {
+                TempData["error"] = "Start date cannot be later than end date!";
+                return RedirectToAction("UpdateCalendar", new { ID = calendar.ID });
+            }
+
+            else if (isClashed == 1)
+            {
+                TempData["error"] = "Date Clash!";
+                return RedirectToAction("UpdateCalendar", new { ID = calendar.ID });
+            }
+
+            else
+            {
+                calendar.Start_Day = enter.Start_Day;
+                calendar.End_Day = enter.End_Day;
+                calendar.AnnualLeaveType_ID = Int32.Parse(enter.annualLeaveTypeList);
+
+                var result = _calendarService.Update(calendar);
+                return RedirectToAction("EmployeeTable");
+            }
         }
 
         [HttpGet]
@@ -287,24 +361,24 @@ namespace EldorAnnualLeave.Web.Controllers
 
         public async Task<int> IDgeneratorAsync()
         {
-            int checkID = 1;
-            int userID;
+            //int checkID = 1;
 
             var users = await _appUserService.GetAllUsersAsync();
+            int userID = users.Count() + 1;
 
-            foreach(var user in users)
+            /*foreach(var user in users)
             {
                 userID = int.Parse(user.Id);
 
-                if (userID != checkID)
+                if (userID == checkID)
                 {
-                    break;
+                    checkID++;
                 }
+            }*/
 
-                checkID++;
-            }
+            //checkID++;
 
-            return checkID;
+            return userID;
         }
 
         [HttpPost]
@@ -398,9 +472,16 @@ namespace EldorAnnualLeave.Web.Controllers
         public async Task<IActionResult> UpdateUserPersonal(UpdateAllViewModel updateAll)
         {
             var user = await _appUserService.GetByUserIdAsync(updateAll.Id);
-            ViewBag.user = user;
-
-            return View();
+            //ViewBag.user = user;
+            var asd = new UpdatePersonalViewModel()
+            {
+                UserName= user.UserName,
+                Email = user.Email,
+                Employee_Name = user.Employee_Name,
+                Employee_Surname = user.Employee_Surname,
+                Id = user.Id
+            };
+            return View(asd);
         }
 
         public async Task<IActionResult> UpdateUserPersonalDB(UpdatePersonalViewModel updatePersonal)

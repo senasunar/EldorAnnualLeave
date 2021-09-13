@@ -17,5 +17,6 @@ namespace EldorAnnualLeave.Web.DTOs
         public string annualLeaveType { get; set; }
         public int total { get; set; }
         public int ID { get; set; }
+        public string userId { get; set; }
     }
 }

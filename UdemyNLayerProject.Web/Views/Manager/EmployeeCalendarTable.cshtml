@@ -41,10 +41,10 @@
                     @Html.DisplayFor(modelItem => b.total)
                 </td>
                 <td>
-                    @Html.ActionLink("Update", "EmployeeCalendarTable", "Manager", new { ID = b.ID })
+                    @if (String.Compare(b.userId, ViewBag.userId) == 0) @Html.ActionLink("Update", "UpdateCalendar", "Manager", new { ID = b.ID })
                 </td>
                 <td>
-                    @Html.ActionLink("Delete", "DeleteCalendarRecord", "Manager", new { ID = b.ID })
+                    @if (String.Compare(b.userId, ViewBag.userId) == 0) @Html.ActionLink("Delete", "DeleteCalendarRecord", "Manager", new { ID = b.ID })
                 </td>
             </tr>
         }

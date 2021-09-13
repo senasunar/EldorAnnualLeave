@@ -228,7 +228,7 @@ namespace EldorAnnualLeave.Controllers
                     employeeCalendarTableModel.Add(calendar);
                 }
             }
-
+            //var userID = signInManager
             return View(employeeCalendarTableModel);
         }
 
@@ -334,6 +334,97 @@ namespace EldorAnnualLeave.Controllers
             else TempData["inform"] = "Failed! Please follow the password rules!"; //needs spesification
 
             return RedirectToAction("UpdateUserPassword");
+        }
+
+        public async Task<IActionResult> UpdateCalendar(int ID)
+        {
+            var calendar = await _calendarService.GetByIdAsync(ID);
+            var annualLeaveType = await _annualLeaveTypeService.GetByIdAsync(calendar.AnnualLeaveType_ID);
+
+            EnterLeaveViewModel enterLeave = new EnterLeaveViewModel();
+            enterLeave.annualLeaveTypeList = annualLeaveType.ID.ToString();
+            enterLeave.Start_Day = calendar.Start_Day;
+            enterLeave.End_Day = calendar.End_Day;
+            enterLeave.Id = calendar.Employee_ID;
+            enterLeave.Calendar_ID = ID;
+
+            var leaves = await _annualLeaveTypeService.GetAllAsync();
+            List<SelectListItem> ddleaves = new List<SelectListItem>();
+
+            foreach (var leave in leaves)
+            {
+                if (leave.Is_Deleted == 0 && leave.Is_Active == 1)
+                {
+                    ddleaves.Add(new SelectListItem
+                    {
+                        Text = leave.ALT_Name,
+                        Value = leave.ID.ToString()
+                    });
+                }
+            }
+
+            if (TempData["error"] != null) ViewBag.error = TempData["error"].ToString();
+            enterLeave.ALselectList = ddleaves;
+            return View(enterLeave);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateCalendarDB(EnterLeaveViewModel enter)
+        {
+            var employeeTable = await _appUserService.CreateEmployeeTable();
+            string eID = "";
+            int isAllowed = 0;
+            int dateValidator = 0;
+            int isClashed = 0;
+            //var employees = await _employeeService.GetAllAsync();
+
+            //Calendar calendar = new Calendar();
+            var calendar = await _calendarService.GetByIdAsync(enter.Calendar_ID);
+
+            foreach (var employee in employeeTable)
+            {
+                if (employee.Id == enter.Id)
+                {
+                    eID = employee.Id;
+
+                    TimeSpan ts = enter.End_Day.Subtract(enter.Start_Day);
+                    int days = ((int)ts.TotalDays);
+
+                    if (employee.restOfLeave >= days) isAllowed = 1;
+                    if (days >= 0) dateValidator = 1;
+                    if (IsClashed(enter.Start_Day, enter.End_Day, employee)) isClashed = 1;
+
+                    break;
+                }
+            }
+
+            if (isAllowed == 0)
+            {
+                TempData["error"] = "Do not have enough leave!";
+                return RedirectToAction("UpdateCalendar", new { ID = calendar.ID });
+            }
+
+            else if (dateValidator == 0)
+            {
+                TempData["error"] = "Start date cannot be later than end date!";
+                return RedirectToAction("UpdateCalendar", new { ID = calendar.ID });
+            }
+
+            else if (isClashed == 1)
+            {
+                TempData["error"] = "Date Clash!";
+                return RedirectToAction("UpdateCalendar", new { ID = calendar.ID });
+            }
+
+            else
+            {
+                calendar.Start_Day = enter.Start_Day;
+                calendar.End_Day = enter.End_Day;
+                calendar.AnnualLeaveType_ID = Int32.Parse(enter.annualLeaveTypeList);
+
+                var result = _calendarService.Update(calendar);
+                return RedirectToAction("EmployeeTable");
+            }
         }
     }
 }

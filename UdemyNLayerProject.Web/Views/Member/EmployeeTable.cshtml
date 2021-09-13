@@ -56,7 +56,7 @@
                 @Html.DisplayFor(modelItem => b.Rest_Of_Leave)
             </td>
             <td>
-                @Html.ActionLink("Details", "EmployeeCalendarTable", "Member", new { employeeID = b.Employee_ID })
+                @if (b.Annual_Leave != 0) @Html.ActionLink("Details", "EmployeeCalendarTable", "Member", new { employeeID = b.Employee_ID })
             </td>
         </tr>
         }

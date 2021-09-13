@@ -27,6 +27,6 @@ namespace EldorAnnualLeave.Web.ViewModels
 
         public int Calendar_ID { get; set; }
 
-        //public List<SelectListItem> annualLeaveTypeList { set; get; }
+        public List<SelectListItem> ALselectList { set; get; }
     }
 }

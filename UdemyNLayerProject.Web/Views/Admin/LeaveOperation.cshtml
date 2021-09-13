@@ -18,11 +18,27 @@
                 <span asp-validation-for="Id" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Delete Leave Type" class="btn btn-primary" asp-action="DeleteLeaveType" />
+                <input type="submit" value="Delete Leave Type" class="btn btn-primary" asp-action="DeleteLeaveType" id="btn_deleteLeave" disabled/>
             </div>
             <div>
-                <input type="submit" value="Inactive Leave Type" class="btn btn-primary" asp-action="InactiveLeaveType" />
+                <input type="submit" value="Inactive Leave Type" class="btn btn-primary" asp-action="InactiveLeaveType" id="btn_inactiveLeave" disabled/>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function (event) {
+        var select = document.getElementById('Id');
+
+        select.addEventListener("change", function () {
+            if (select.value == "") {
+                document.getElementById('btn_deleteLeave').disabled = true;
+                document.getElementById('btn_inactiveLeave').disabled = true;
+            } else {
+                document.getElementById('btn_deleteLeave').disabled = false;
+                document.getElementById('btn_inactiveLeave').disabled = false;
+            }
+        });
+    });
+</script>

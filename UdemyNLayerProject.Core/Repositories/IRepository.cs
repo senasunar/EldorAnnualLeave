@@ -9,7 +9,7 @@ namespace EldorAnnualLeave.Core.Repositories
 {
     public interface IRepository<TEntity> where TEntity : class
     {
-        Task<TEntity> GetByIdAsync([Optional] int id, [Optional] string sid);
+        Task<TEntity> GetByIdAsync(int id);
 
         Task<IEnumerable<TEntity>> GetAllAsync();
 
