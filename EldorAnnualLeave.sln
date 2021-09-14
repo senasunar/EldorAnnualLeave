@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EldorAnnualLeave.API", "UdemyNLayerProject.API\EldorAnnualLeave.API.csproj", "{11837AE8-16D1-4CF0-A553-7999D61BD269}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EldorAnnualLeave.Core", "UdemyNLayerProject.Core\EldorAnnualLeave.Core.csproj", "{6B37E245-77EE-453D-A821-C45B09E17AF0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EldorAnnualLeave.Data", "UdemyNLayerProject.Data\EldorAnnualLeave.Data.csproj", "{B66534B1-1707-42CC-B82D-F42CFF6BA9D0}"
@@ -19,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{11837AE8-16D1-4CF0-A553-7999D61BD269}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{11837AE8-16D1-4CF0-A553-7999D61BD269}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{11837AE8-16D1-4CF0-A553-7999D61BD269}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{11837AE8-16D1-4CF0-A553-7999D61BD269}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6B37E245-77EE-453D-A821-C45B09E17AF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6B37E245-77EE-453D-A821-C45B09E17AF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B37E245-77EE-453D-A821-C45B09E17AF0}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -16,8 +16,6 @@ namespace EldorAnnualLeave.Data
 
         public DbSet<Calendar> Calendars { get; set; }
 
-        public DbSet<Employee> Employees { get; set; }
-
         public DbSet<AnnualLeaveIncrease> AnnualLeaveIncreases { get; set; }
     }
 }

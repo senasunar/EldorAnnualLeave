@@ -19,7 +19,6 @@ namespace EldorAnnualLeave.Web.Controllers
     [Authorize(Roles = "Administrator")]
     public class AdminController : BaseController
     {
-        private readonly IEmployeeService _employeeService;
         private readonly IAnnualLeaveTypeService _annualLeaveTypeService;
         private readonly ICalendarService _calendarService;
         private readonly IAppUserService _appUserService;
@@ -29,14 +28,12 @@ namespace EldorAnnualLeave.Web.Controllers
         public AdminController(
             UserManager<AppUser> userManager, 
             SignInManager<AppUser> signInManager,
-            IEmployeeService employeeService, 
             IAnnualLeaveTypeService annualLeaveTypeService, 
             ICalendarService calendarService, 
             IAppUserService appUserService,
             IAppRoleService appRoleService,
             IMapper mapper) : base(userManager, signInManager)
         {
-            _employeeService = employeeService;
             _appUserService = appUserService;
             _appRoleService = appRoleService;
             _annualLeaveTypeService = annualLeaveTypeService;

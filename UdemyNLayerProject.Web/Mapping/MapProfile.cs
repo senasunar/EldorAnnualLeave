@@ -16,9 +16,6 @@ namespace EldorAnnualLeave.Web.Mapping
             CreateMap<AnnualLeaveType, AnnualLeaveTypeDto>();
             CreateMap<AnnualLeaveTypeDto, AnnualLeaveType>();
 
-            CreateMap<Employee, EmployeeDto>();
-            CreateMap<EmployeeDto, Employee>();
-
             CreateMap<AnnualLeaveIncrease, LeaveAdditionDto>();
             CreateMap<LeaveAdditionDto, AnnualLeaveIncrease>();
 

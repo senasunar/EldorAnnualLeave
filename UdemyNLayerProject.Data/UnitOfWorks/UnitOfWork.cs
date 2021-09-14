@@ -16,7 +16,6 @@ namespace EldorAnnualLeave.Data.UnitOfWorks
 
         private AnnualLeaveTypeRepository _annualLeaveTypeRepository;
         private CalendarRepository _calendarRepository;
-        private EmployeeRepository _employeeRepository;
         private AnnualLeaveIncreaseRepository _annualLeaveIncreaseRepository;
         private AppRoleRepository _appRoleRepository;
         private AppUserRepository _appUserRepository;
@@ -24,8 +23,6 @@ namespace EldorAnnualLeave.Data.UnitOfWorks
         public IAnnualLeaveTypeRepository AnnualLeaveTypes => _annualLeaveTypeRepository = _annualLeaveTypeRepository ?? new AnnualLeaveTypeRepository(_context, _identityContext);
 
         public ICalendarRepository Calendars => _calendarRepository = _calendarRepository ?? new CalendarRepository(_context, _identityContext);
-
-        public IEmployeeRepository Employees => _employeeRepository = _employeeRepository ?? new EmployeeRepository(_context, _identityContext);
 
         public IAnnualLeaveIncreaseRepository AnnualLeaveIncreases => _annualLeaveIncreaseRepository = _annualLeaveIncreaseRepository ?? new AnnualLeaveIncreaseRepository(_context, _identityContext);
 

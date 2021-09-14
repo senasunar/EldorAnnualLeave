@@ -25,7 +25,6 @@ namespace EldorAnnualLeave.Controllers
     [Authorize(Roles = "Member")]
     public class MemberController : BaseController
     {
-        private readonly IEmployeeService _employeeService;
         private readonly IAnnualLeaveTypeService _annualLeaveTypeService;
         private readonly ICalendarService _calendarService;
         private readonly IAppUserService _appUserService;
@@ -35,14 +34,12 @@ namespace EldorAnnualLeave.Controllers
         public MemberController(
             UserManager<AppUser> userManager, 
             SignInManager<AppUser> signInManager, 
-            IEmployeeService employeeService, 
             IAnnualLeaveTypeService annualLeaveTypeService, 
             ICalendarService calendarService,
             IAppUserService appUserService,
             IAppRoleService appRoleService,
             IMapper mapper) : base(userManager, signInManager)
         {
-            _employeeService = employeeService;
             _annualLeaveTypeService = annualLeaveTypeService;
             _calendarService = calendarService;
             _appUserService = appUserService;
