@@ -243,7 +243,7 @@ namespace EldorAnnualLeave.Web.Controllers
             enterLeave.annualLeaveTypeList = annualLeaveType.ID.ToString();
             enterLeave.Start_Day = calendar.Start_Day;
             enterLeave.End_Day = calendar.End_Day;
-            enterLeave.Id = calendar.Employee_ID;
+            enterLeave.Employee_ID = calendar.Employee_ID;
             enterLeave.Calendar_ID = ID;
 
             var leaves = await _annualLeaveTypeService.GetAllAsync();
@@ -281,7 +281,7 @@ namespace EldorAnnualLeave.Web.Controllers
 
             foreach (var employee in employeeTable)
             {
-                if (employee.Id == enter.Id)
+                if (employee.Id == enter.Employee_ID)
                 {
                     eID = employee.Id;
 
@@ -290,10 +290,16 @@ namespace EldorAnnualLeave.Web.Controllers
 
                     if (employee.restOfLeave >= days) isAllowed = 1;
                     if (days >= 0) dateValidator = 1;
-                    if (IsClashed(enter.Start_Day, enter.End_Day, employee)) isClashed = 1;
+                    if (IsClashed(enter.Start_Day, enter.End_Day, employee)) isClashed++;
 
                     break;
                 }
+            }
+
+            if (dateValidator == 0)
+            {
+                TempData["error"] = "Start date cannot be later than end date!";
+                return RedirectToAction("UpdateCalendar", new { ID = calendar.ID });
             }
 
             if (isAllowed == 0)
@@ -302,13 +308,7 @@ namespace EldorAnnualLeave.Web.Controllers
                 return RedirectToAction("UpdateCalendar", new { ID = calendar.ID });
             }
 
-            else if (dateValidator == 0)
-            {
-                TempData["error"] = "Start date cannot be later than end date!";
-                return RedirectToAction("UpdateCalendar", new { ID = calendar.ID });
-            }
-
-            else if (isClashed == 1)
+            if (isClashed > 1)
             {
                 TempData["error"] = "Date Clash!";
                 return RedirectToAction("UpdateCalendar", new { ID = calendar.ID });

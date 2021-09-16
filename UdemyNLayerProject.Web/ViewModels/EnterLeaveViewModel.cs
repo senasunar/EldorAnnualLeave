@@ -23,7 +23,7 @@ namespace EldorAnnualLeave.Web.ViewModels
         [Required(ErrorMessage = "Annual Leave Type is required")]
         public String annualLeaveTypeList { get; set; }
 
-        public String Id { get; set; }
+        public String Employee_ID { get; set; }
 
         public int Calendar_ID { get; set; }
 
